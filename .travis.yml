@@ -5,32 +5,36 @@ sudo: required
 services:
   - docker
 
+#test 설정 / 테스트는 frontend만 진행
 before_install:
-  - docker build -t whiwoncho/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+  - docker build -t whiwon/react-test-app -f ./frontend/Dockerfile.dev ./frontend
 
+# test code
 script:
-  - docker run -e CI=true whiwoncho/react-test-app npm test
+  - docker run -e CI=true whiwon/react-test-app npm run test
 
 after_success:
-  - docker build -t whiwoncho/docker-frontend ./frontend
-  - docker build -t whiwoncho/docker-backend ./backend
-  - docker build -t whiwoncho/docker-nginx ./nginx
+  - docker build -t whiwon/docker-frontend ./frontend
+  - docker build -t whiwon/docker-backend ./backend
+  - docker build -t whiwon/docker-nginx ./nginx
 
+# 도커 허브 로그인 / 환경값은 travis ci에 작성
   - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
 
-  - docker push whiwoncho/docker-frontend
-  - docker push whiwoncho/docker-backend
-  - docker push whiwoncho/docker-nginx
+# 빌드된 이미지들을 도커 허브에 전달
+  - docker push whiwon/docker-frontend
+  - docker push whiwon/docker-backend
+  - docker push whiwon/docker-nginx
 
-deploy:
-  provider: elasticbeanstalk
-  region: "ap-northeast-2"
-  app: "docker-fullstack-app"
-  env: "DockerFullstackApp-env"
-  bucket_name: elasticbeanstalk-ap-northeast-2-972153559337
-  bucket_path: "docker-fullstack-app"
-  on:
-    branch: main
+# deploy:
+#   provider: elasticbeanstalk
+#   region: "ap-northeast-2"
+#   app: "docker-fullstack-app"
+#   env: "DockerFullstackApp-env"
+#   bucket_name: elasticbeanstalk-ap-northeast-2-972153559337
+#   bucket_path: "docker-fullstack-app"
+#   on:
+#     branch: main
   
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
+#   access_key_id: $AWS_ACCESS_KEY
+#   secret_access_key: $AWS_SECRET_ACCESS_KEY
