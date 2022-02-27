@@ -1,0 +1,13 @@
+FROM node:14.14.0-alpine
+
+WORKDIR /app
+
+COPY ./package.json ./
+
+RUN npm install
+
+COPY . .
+
+# dev일때는 nodemon server.js로 해서 소스코드 변경시 바로바로 반영되게 하려고 하는것
+CMD ["npm", "run", "dev"]
+
